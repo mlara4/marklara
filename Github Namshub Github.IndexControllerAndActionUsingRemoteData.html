@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.js"></script>
+  <script src="http://builds.emberjs.com.s3.amazonaws.com/tags/v1.0.0/ember.js"></script>
+  <script src="//builds.emberjs.com/tags/v1.13.6/ember-data.js"></script>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+  <div class="container" id="github-app">
+  </div>
+  
+  <script type="text/x-handlebars" data-template-name="application">
+    <div class="row">
+      <div class="col-md-12" style="margin-top:48px">
+        {{outlet}}
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="index">
+    <h1>Github Namshub</h1>
+    <hr/>
+    <p>This is the Github explorer for all of our favorite developers</p>
+    <ul>
+      {{#each}}
+      <li>{{#link-to 'user' this}}{{name}}{{/link-to}}</a></li>
+      {{/each}}
+    </ul>
+    <p>
+      <button class="btn btn-success" {{action "clickMe"}}>Click Me!</button>
+    </p>
+    <p>{{renderedOn}}</p>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="user">
+      <div class="row">
+        <div class="coll-md-3">
+          <div class="well">
+            <p class="text-center">
+              {{#link-to 'user' this}}<img {{bind-attr src=avatar_url}} style="width:140px"/>{{/link-to}}
+            </p>
+            <h4>{{#link-to 'user' this}}{{name}}{{/link-to}}</h4>
+            <p>
+              {{company}}<br/>
+              {{location}}<br/>
+              {{email}}<br/>
+            </p>
+            <hr/>
+            <table class="table table-striped">
+                <tr><td>Followers:</td><td>{{followers}}</td></tr>
+                <tr><td>Repositories:</td><td>{{public_repos}}</td></tr>
+                <tr><td>Gists:</td><td>{{public_gists}}</td></tr>
+            </table>
+            <p>
+                {{#link-to "index"}}Back{{/link-to}}
+            </p>
+          </div>
+        </div>
+      </div>
+  </script>
+  
+  
+
+</body>
+  <script>
+    
+      var devs = [
+        {login: "robconery", name: "Rob Conery", avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "Tekpub", location: "Hanalei, HI", email: "rob@wekeroad.com", followers: 800, public_repos: 20, public_gists: 23},
+        {login: "shanselman", name: "Scott Hanselman" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "abc", location: "Corona, CA", email: "abc@xyx.com", followers: 800, public_repos: 20, public_gists: 23},
+        {login: "tomdale", name: "Tom Dale" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "zzz", location: "San Diego, CA", email: "zzz@zz.com", followers: 800, public_repos: 20, public_gists: 23},
+        {login: "wycats", name: "Yehuda Katz" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "nyc", location: "New York, NY", email: "nyc@nyc.com", followers: 800, public_repos: 20, public_gists: 23},
+        {login: "jongalloway", name: "Jon Gollaway" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "qqq", location: "Los Angeles, CA", email: "la@ca.com", followers: 800, public_repos: 20, public_gists: 23},
+        {login: "haacked", name: "Phil Haack" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "xxy", location: "Nevada, OR", email: "xxy@or.com", followers: 800, public_repos: 20, public_gists: 23}
+      ]
+    
+    window.Github = Ember.Application.create({
+        rootElement:"#github-app"
+    });
+    
+    Github.IndexRoute = Ember.Route.extend({
+        model: function(){
+            return devs 
+            /*return [
+                "Rob Conery",
+                "Scott Hanselman",
+                "Tome Dale",
+                "Yehuda Katz",
+                "Jon Gollaway",
+                "Phil Haack"
+            ];*/
+        }
+    });
+    
+    Github.Router.map(function(){
+        this.resource("user", {path: "/users/:login"});
+    });
+    
+    Github.UserRoute = Ember.Route.extend({
+        model: function(params) {
+            return Ember.$.getJSON("https://api.github.com/users/"+params.login);
+        }
+    });
+    
+    Github.IndexController = Ember.ArrayController.extend({
+      renderedOn: function(){
+          return new Date();
+      }.property(),
+      actions: {
+          clickMe: function(){
+            alert("I been clicked");
+          }
+      }
+      
+    });
+  </script>
+</html>
