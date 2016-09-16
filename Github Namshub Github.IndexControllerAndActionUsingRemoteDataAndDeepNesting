@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.js"></script>
+  <script src="http://builds.emberjs.com.s3.amazonaws.com/tags/v1.0.0/ember.js"></script>
+  <script src="//builds.emberjs.com/tags/v1.13.6/ember-data.js"></script>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+  <div class="container" id="github-app">
+  </div>
+  
+  <script type="text/x-handlebars" data-template-name="application">
+    <div class="row">
+      <div class="col-md-12" style="margin-top:48px">
+        {{outlet}}
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="index">
+    <h1>Github Namshub</h1>
+    <hr/>
+    <p>This is the Github explorer for all of our favorite developers</p>
+    <ul>
+      {{#each}}
+      <li>{{#link-to 'user' this}}{{name}}{{/link-to}}</a></li>
+      {{/each}}
+    </ul>
+    <p>
+      <button class="btn btn-success" {{action "clickMe"}}>Click Me!</button>
+    </p>
+    <p>{{renderedOn}}</p>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="user">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="well">
+            <p class="text-center">
+              {{#link-to 'user' this}}<img {{bind-attr src=avatar_url}} style="width:140px"/>{{/link-to}}
+            </p>
+            <h4>{{#link-to 'user' this}}{{name}}{{/link-to}}</h4>
+            <p>
+              {{company}}<br/>
+              {{location}}<br/>
+              {{email}}<br/>
+            </p>
+            <hr/>
+            <table class="table table-striped">
+                <tr><td>Followers:</td><td>{{followers}}</td></tr>
+                <tr><td>Repositories:</td><td>{{public_repos}}</td></tr>
+                <tr><td>Gists:</td><td>{{public_gists}}</td></tr>
+            </table>
+            <p>
+                {{#link-to "index"}}Back{{/link-to}}
+            </p>
+          </div>
+        </div>
+        <div class="col-md-8">
+            {{outlet}}
+        </div>
+      </div>
+  </script>
+  
+  <script type="text/x-handlebars" id="user/index">
+        <h2>{{name}}'s Github</h2>
+        <hr/>
+        <ul>
+          <li>{{#link-to 'repositories' this}}Repositories{{/link-to}}</li>
+          <li><a href="#">News and Events</a></li>
+          <li><a href="#">Gists</a></li>
+        </ul>
+  </script>
+  
+  <script type="text/x-handlebars" id="repositories">
+      <ol class="breadcrumb">
+          <li>{{#link-to 'index'}}Devs{{/link-to}}</li>
+          <li>{{#link-to 'user' user }}{{user.name}}{{/link-to}}</li>
+          <li>{{#link-to 'repositories'}}Repositories{{/link-to}}</li>
+          <li class="active">{{name}}</li>
+      </ol>
+      <tab class="table table-striped>
+          {{#each}}
+          <tr>
+            <td><h4>{{#link-to 'repository' this}}{{name}}{{/link-to}}</h4></td>
+            <td>
+            
+              {{description}}
+    
+            </td>
+          </tr>
+          {{/each}}
+      </table>
+  </script>   
+  
+  <script type="text/x-handlebars" id="repository">
+      <ol class="breadcrumb">
+          <li>{{#link-to 'index'}}Devs{{/link-to}}</li>
+          <li>{{#link-to 'user' user }}{{user.name}}{{/link-to}}</li>
+          <li>{{#link-to 'repositories'}}Repositories{{/link-to}}</li>
+          <li class="active">{{name}}</li>
+      </ol>
+        <h1>{{name}} Repo</h1>
+        <p>{{description}}</p>
+        <ul>
+            <li>Language: {{language}}</li>
+            <li>Watchers: {{watchers}}</li>
+            <li>Open Issues: {{watchers}}</li>
+            <li>Clone: <b>{{clone_url}}</b></li>
+            <li>Web: <a {{bind-attr href=html_url}} target=_blank>{{html_url}}></a></li>
+        </ul>
+        <hr/>
+        <ul class="list-inline">
+          <li>{{#link-to 'issues'}}Issues{{/link-to}}</li>
+          <li>{{#link-to 'forks'}}Forks{{/link-to}}</li>
+          <li>{{#link-to 'commits'}}Commits{{/link-to}}</li>
+        </ul>
+        {{outlet}}
+  </script>
+  <script type="text/x-handlebars" id="issues">
+      <h4>ISSUES</h4>
+      <table class="table table-striped">
+        {{#each}}
+          <tr>
+            <td><img {{bind-attr src=user.avatar_url}} style="width:120px"/></td>
+            <td>{{title}}</td>
+            <td>{{created_at}}</td>
+          </tr>
+        {{/each}}
+      </table>
+  </script>
+  <script type="text/x-handlebars" id="forks">
+      <h1>FORKS</h1>
+  </script>
+  <script type="text/x-handlebars" id="commits">
+      <h1>COMMITS</h1>
+  </script>
+</body>
+  <script>
+    
+      var devs = [
+        {login: "robconery", name: "Rob Conery", avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "Tekpub", location: "Hanalei, HI", email: "rob@wekeroad.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"},
+        {login: "shanselman", name: "Scott Hanselman" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "abc", location: "Corona, CA", email: "abc@xyx.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"},
+        {login: "tomdale", name: "Tom Dale" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "zzz", location: "San Diego, CA", email: "zzz@zz.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"},
+        {login: "wycats", name: "Yehuda Katz" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "nyc", location: "New York, NY", email: "nyc@nyc.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"},
+        {login: "jongalloway", name: "Jon Gollaway" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "qqq", location: "Los Angeles, CA", email: "la@ca.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"},
+        {login: "haacked", name: "Phil Haack" , avatar_url:"https://gravatar.com/avatar/51c6697964956c0c4bb136c84bdecd4d?d=https%3A%2F%2Fidenticons.github.com%2Fcf2db4930a96ca9637017b276a0ab1a.png&r=x", company: "xxy", location: "Nevada, OR", email: "xxy@or.com", followers: 800, public_repos: 20, public_gists: 23, repos_url: "https://api.github.com/users/robconery/repos"}
+      ];
+      
+      
+    
+    window.Github = Ember.Application.create({
+        rootElement:"#github-app",
+        LOG_TRANSITIONS: true
+    });
+    
+    Github.IndexRoute = Ember.Route.extend({
+        model: function(){
+            return devs 
+            /*return [
+                "Rob Conery",
+                "Scott Hanselman",
+                "Tome Dale",
+                "Yehuda Katz",
+                "Jon Gollaway",
+                "Phil Haack"
+            ];*/
+        }
+    });
+    
+    Github.Router.map(function(){
+        this.resource("user", {path: "users/:login"}, function() {
+            this.resource("repositories");
+            this.resource("repository", {path: "repositories/:reponame"}, function() {
+                this.resource("issues");
+                this.resource("forks");
+                this.resource("commits");
+            });
+        });
+    });
+    
+    Github.UserRoute = Ember.Route.extend({
+        model: function(params) {
+            return Ember.$.getJSON("https://api.github.com/users/"+params.login);
+        }
+    });
+    
+    Github.UserIndexRoute = Ember.Route.extend({
+      model: function() {
+        return this.modelFor('user');
+      }
+    });
+      
+    Github.RepositoriesRoute = Ember.Route.extend({
+        model: function() {
+          var user=this.modelFor('user');
+          return Ember.$.getJSON(user.repos_url);
+        }
+    });
+    
+    Github.RepositoryRoute = Ember.Route.extend({
+        model: function() {
+          var user = this.modelFor("user");
+          //build the URL for the Repo call manually
+          var url = "https://api.github.com/repos/" + user.login + "/" + params.reponame;
+          return Ember.$.getJSON(url);
+        }
+      
+    });
+    
+    Github.IssuesRoute = Ember.Route.extend({
+        model: function() {
+            var repo = this.modelFor("repository");
+            var url = repo.issues_url.replace("{/number}","");
+            return Ember.$.getJSON(url);
+        }
+    });
+    
+    Github.RepositoriesController = Ember.ArrayController.extend({
+        needs: ["user"],
+        user: Ember.computed.alias("controllers.user")
+    });
+            
+    Github.RepositoryController = Ember.ObjectController.extend({
+        needs: ["user"],
+        user: Ember.computed.alias("controllers.user")
+    });
+    
+    Github.IndexController = Ember.ArrayController.extend({
+      renderedOn: function(){
+          return new Date();
+      }.property(),
+      actions: {
+          clickMe: function(){
+            alert("I been clicked");
+          }
+      }
+      
+    });
+  </script>
+</html>
